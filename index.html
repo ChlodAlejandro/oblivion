@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--
+- So, what is this?
+- 
+- First of all, it's a meme. Seriously.
+- 
+- Second, it's a demonstration of click prevention after playing the video. This
+- isn't a malicious page - you're free to close the tab whenever you want with
+- no consequence. However, starting the playback of the video will immediately
+- prevent further clicks from being made - except for a double click which will
+- bring you to the original video. This is somewhat useful for jumpscare websites,
+- as the click prevention will stop the user from pausing the video once it starts.
+- Also to the impaired: sorry, but this will also prevent you from using Tab to
+- switch the active element selected. Essentially, it also prevents you from tabbing
+- into the embedded player to stop the playback. If you have to, Ctrl + W should
+- exit the page.
+-
+- It's also good for making HTML5-based cutscenes.
+-
+- Third, it's Hatsune Miku's cover of Grimes - Oblivion. That's literally it.
+-
+- The original video can be found at https://www.youtube.com/watch?v=IVwJqEXWSOQ, and
+- the video is made by Ctrl Ult Delete.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>o b l i v i o n</title>
+
+        <meta name="twitter:card" content="summary"/>
+        <meta name="twitter:creator" content="ChlodAlejandro"/>
+        <meta name="twitter:image" content="https://oblivion.chlod.net/oblivion.png"/>
+        
+        <meta name="og:title" property="og:title" content="o b l i v i o n" />
+        <meta name="og:description" property="og:description" content="s e e y o u o n a d a r k n i g h t" />
+        <meta name="description" content="s e e y o u o n a d a r k n i g h t">
+        <meta name="og:image" property="og:image" content="https://oblivion.chlod.net/oblivion.png"/>
+
+        <link rel="shortcut" type="image/png" href="https://oblivion.chlod.net/favicon.ico">
+        <link rel="icon" type="image/png" href="https://oblivion.chlod.net/favicon.ico">
+        
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+                overflow: hidden;
+            }
+            #block {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+            }
+            #ytc {                
+                position: relative;
+                overflow: hidden;
+                width: 100vw;
+                height: 100vh;
+            }
+            #ytc iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="ytc"></div>
+        <div id="block" style="pointer-events: none"></div>
+        <script>
+            // Double-click trap
+            var block = document.getElementById("block");
+            var lastclick = 0;
+            block.addEventListener("click", () => {
+                if (Date.now() - lastclick > 300)
+                    lastclick = Date.now();
+                else
+                    window.open("https://www.youtube.com/watch?v=IVwJqEXWSOQ");
+            });
+            document.body.addEventListener("keydown", (event) => {
+                if (
+                    event.key === "Tab"
+                    || (event.ctrlKey && event.shiftKey && event.key === "I")
+                    || (event.ctrlKey && event.shiftKey && event.key === "C")
+                    || (event.ctrlKey && event.shiftKey && event.key === "J")
+                    || (event.ctrlKey && event.key === "U")
+                    || /F\d+/.test(event.key)
+                ) {
+                    block.focus();
+                    switch (Math.floor(Math.random() * 8000)%8) {
+                        case 0:
+                            alert("シテヤンヨから逃げるな"); break;
+                        case 1:
+                            alert("ミクの髪から逃げるな"); break;
+                        case 2:
+                            alert("抵抗するな"); break;
+                        case 3:
+                            alert("離れるな"); break;
+                        case 4:
+                            alert("行くな"); break;
+                        case 5:
+                            alert("残る"); break;
+                        case 6:
+                            alert("避けるな"); break;
+                        case 7:
+                            alert("行くな"); break;
+                    }
+                    event.preventDefault();
+                }
+            });
+            document.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
+            
+            // Play when ready (for autoplaying browsers)
+            function onPlayerReady(event) {
+                event.target.playVideo();
+            }
+            
+            // Lock the page if playing
+            function onPlayerStateChange(event) {
+                // This is required since mobile browsers require human interaction
+                // in order to begin playback. As soon as they click play, this will
+                // enable the click blocker and prevent pausing. This also prevents
+                // the block from starting if they paused it before the video plays,
+                // in case the video was loading too slow.
+                if (event.data === -1 || event.data === 2)
+                    block.style.pointerEvents = "none";
+                else
+                    block.style.pointerEvents = "";
+            }
+            
+            // Create the YouTube player
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player("ytc", {
+                    videoId: "IVwJqEXWSOQ",
+                    playerVars: {
+                        controls: 0,
+                        autoplay: 1,
+                        loop: 1,
+                        playlist: "IVwJqEXWSOQ"
+                    },
+                    events: {
+                        "onReady": onPlayerReady,
+                        "onStateChange": onPlayerStateChange
+                    }
+                });
+            }
+        </script>
+        <script src="https://www.youtube.com/iframe_api" async></script>
+    </body>
+</html>
